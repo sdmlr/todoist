@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "todoist",
+    "name": "Todoist",
     "slug": "todoist",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "todoist",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.stefanodimichele.todoist"
     },
     "web": {
       "bundler": "metro",
@@ -42,6 +43,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "d8377e08-1099-45b2-8075-e80501d71661"
+      }
+    },
+    "owner": "stefanodimichele"
   }
 }
