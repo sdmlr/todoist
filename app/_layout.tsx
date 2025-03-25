@@ -14,7 +14,7 @@ if (!publishableKey) {
 
 const InitialLayout = () => {
   return (
-    <Stack>
+    <Stack screenOptions={{ contentStyle: { backgroundColor: Colors.primary}}}>
       <Stack.Screen
         name="index"
         options={{
