@@ -5,50 +5,52 @@ import * as AuthSession from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useCallback } from "react";
+import { googleOAuth, appleOAuth } from "@/utils/auth";
 
 export default function Index() {
-  const redirectUrl = AuthSession.makeRedirectUri();
-
-  const { startSSOFlow: googleOAuth } = useSSO({
+  const { startSSOFlow: startGoogleSSO } = useSSO({
     strategy: "oauth_google",
-    redirectUrl,
   });
-  const { startSSOFlow: appleOAuth } = useSSO({
+
+  const { startSSOFlow: startAppleSSO } = useSSO({
     strategy: "oauth_apple",
-    redirectUrl,
   });
   const { top } = useSafeAreaInsets();
-// 
-  const handleGoogleSignIn = async () => {
+
+  const handleGoogleSignIn = useCallback(async () => {
     try {
-      const { createdSessionId, setActive } = await googleOAuth();
-      console.log(
-        "🚀 - handleGoogleOAuth - createdSessionId",
-        createdSessionId
-      );
+      // Start the authentication process by calling `startSSOFlow()`
+      const result = await googleOAuth(startGoogleSSO);
 
       // If sign in was successful, set the active session
-      if (createdSessionId && setActive) {
-        await setActive({ session: createdSessionId });
+      if (result.code === "session_exists" || result.code === "success") {
+        console.log(
+          "🚀 - handleGoogleOAuth - createdSessionId",
+          createdSessionId
+        );
       }
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.error(JSON.stringify(err, null, 2));
     }
-  };
+  }, []);
 
-  const handleAppleSignIn = async () => {
+  const handleAppleSignIn = useCallback(async () => {
     try {
-      const { createdSessionId, setActive } = await appleOAuth();
-      console.log("🚀 - handleAppleOAuth - createdSessionId", createdSessionId);
+      // Start the authentication process by calling `startSSOFlow()`
+      const result = await appleOAuth(startAppleSSO);
 
       // If sign in was successful, set the active session
-      if (createdSessionId && setActive) {
-        await setActive({ session: createdSessionId });
+      if (result.code === "session_exists" || result.code === "success") {
+        console.log(
+          "🚀 - handleAppleOAuth - createdSessionId",
+          createdSessionId
+        );
       }
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.error(JSON.stringify(err, null, 2));
     }
-  };
+  }, []);
 
   const openLink = async () => {
     await WebBrowser.openBrowserAsync("https://galaxies.dev");
