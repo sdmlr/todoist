@@ -1,11 +1,15 @@
-import { View, Text } from "react-native";
+import { useAuth } from "@clerk/clerk-expo";
+import { View, Text, Button } from "react-native";
 
-const index = () => {
+const Page = () => {
+  const { signOut } = useAuth();
+
   return (
     <View>
       <Text>browse</Text>
+      <Button title="Sign Out" onPress={() => signOut()} />
     </View>
   );
 };
 
-export default index;
+export default Page;
