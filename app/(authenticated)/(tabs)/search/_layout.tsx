@@ -15,10 +15,12 @@ export default function SearchStackLayout() {
         options={{
           title: "Search",
           headerLargeTitle: true,
-          headerRight: () => <MoreButton />,
+          headerSearchBarOptions: {
+            placeholder: 'Tasks, Projects and More',
+            tintColor: Colors.primary,
+          }
         }}
       />
-      {/* If you had deeper routes like "details.tsx", you'd add them here too */}
     </Stack>
   );
 }
