@@ -18,7 +18,6 @@ export default function TodayStackLayout() {
           headerRight: () => <MoreButton />,
         }}
       />
-      {/* If you had deeper routes like "details.tsx", you'd add them here too */}
     </Stack>
   );
 }
