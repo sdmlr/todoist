@@ -7,8 +7,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useCallback } from "react";
 import { googleOAuth, appleOAuth } from "@/utils/auth";
+import { useRouter } from "expo-router";
 
 export default function Index() {
+  const { top } = useSafeAreaInsets();
+  const router = useRouter();
+  
   const { startSSOFlow: startGoogleSSO } = useSSO({
     strategy: "oauth_google",
   });
@@ -16,7 +20,6 @@ export default function Index() {
   const { startSSOFlow: startAppleSSO } = useSSO({
     strategy: "oauth_apple",
   });
-  const { top } = useSafeAreaInsets();
 
   const handleGoogleSignIn = useCallback(async () => {
     try {
@@ -52,6 +55,12 @@ export default function Index() {
     }
   }, []);
 
+  // Shortcut button to simulate a successful login for development purposes
+  const handleFakeLogin = useCallback(() => {
+    // Navigate directly to your authenticated home screen
+    router.replace("/(authenticated)/(tabs)/today");
+  }, [router]);
+
   const openLink = async () => {
     await WebBrowser.openBrowserAsync("https://galaxies.dev");
   };
@@ -85,7 +94,9 @@ export default function Index() {
         </TouchableOpacity>
         <TouchableOpacity className="flex-row items-center justify-center p-[12px] gap-[10px] rounded-[6px] border-[0.5px] border-[#D9D9D9]">
           <Ionicons name="mail" size={24} />
-          <Text className="text-base font-medium">Continue with Email</Text>
+          <Text className="text-base font-medium" onPress={handleFakeLogin}>
+            Continue with Email
+          </Text>
         </TouchableOpacity>
 
         <Text className="text-xs text-center text-lightText">
