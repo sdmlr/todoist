@@ -2,7 +2,7 @@ import { Stack } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import MoreButton from "@/components/MoreButton"; // Example custom button
 
-export default function TodayStackLayout() {
+export default function BrowseStackLayout() {
   return (
     <Stack
       screenOptions={{
