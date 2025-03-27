@@ -1,10 +1,14 @@
-import { View, Text } from "react-native";
+import Fab from "@/components/Fab";
+import { View, Text, ScrollView } from "react-native";
 
 const index = () => {
   return (
-    <View>
-      <Text>search</Text>
-    </View>
+    <>
+      <ScrollView contentInsetAdjustmentBehavior="automatic">
+        <View></View>
+      </ScrollView>
+      <Fab />
+    </>
   );
 };
 
