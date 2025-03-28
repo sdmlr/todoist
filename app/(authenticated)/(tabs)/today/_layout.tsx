@@ -15,7 +15,7 @@ export default function TodayStackLayout() {
         options={{
           title: "Today",
           headerLargeTitle: true,
-          headerRight: () => <MoreButton />,
+          headerRight: () => <MoreButton pageName="Today"/>,
         }}
       />
     </Stack>

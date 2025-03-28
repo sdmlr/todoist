@@ -15,7 +15,7 @@ export default function UpcomingStackLayout() {
         options={{
           title: "Upcoming",
           headerLargeTitle: true,
-          headerRight: () => <MoreButton />,
+          headerRight: () => <MoreButton pageName="Upcoming" />,
         }}
       />
     </Stack>
