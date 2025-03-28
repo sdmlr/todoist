@@ -11,6 +11,7 @@ import { openDatabaseSync, SQLiteProvider } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
+import { addDummyData } from "@/utils/addDummyData";
 
 LogBox.ignoreLogs(["Clerk: Clerk has been loaded with development keys"]);
 
@@ -72,16 +73,23 @@ const RootLayout = () => {
   const expoDB = openDatabaseSync("todos");
   const db = drizzle(expoDB);
   const { success, error } = useMigrations(db, migrations);
+  console.log("🚀 - RootLayout - error: ", error);
+  console.log("🚀 - RootLayout - success: ", success);
 
   useEffect(() => {
     if (!success) return;
+    addDummyData(db);
   }, [success]);
 
   return (
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
       <ClerkLoaded>
         <Suspense fallback={<Loading />}>
-          <SQLiteProvider databaseName="todos" useSuspense>
+          <SQLiteProvider
+            databaseName="todos"
+            useSuspense
+            options={{ enableChangeListener: true }}
+          >
             <GestureHandlerRootView style={{ flex: 1 }}>
               <Toaster />
               <InitialLayout />
