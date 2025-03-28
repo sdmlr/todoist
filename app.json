@@ -40,7 +40,8 @@
           "launchMode": "most-recent"
         }
       ],
-      "react-native-bottom-tabs"
+      "react-native-bottom-tabs",
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true
