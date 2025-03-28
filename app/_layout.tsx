@@ -4,7 +4,11 @@ import { Slot } from "expo-router";
 import { tokenCache } from "@/utils/cache";
 import { Colors } from "@/constants/Colors";
 import { useEffect } from "react";
-import { ActivityIndicator } from "react-native";
+import { View, ActivityIndicator, LogBox } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Toaster } from "sonner-native";
+
+LogBox.ignoreLogs(["Clerk: Clerk has been loaded with development keys"]);
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
@@ -22,15 +26,14 @@ const InitialLayout = () => {
 
   useEffect(() => {
     if (!isLoaded) return;
-    console.log('segments', segments);
-    console.log('pathName', pathName);
-    
+    console.log("segments", segments);
+    console.log("pathName", pathName);
 
     const inAuthGroup = segments[0] === "(authenticated)";
 
     if (isSignedIn && !inAuthGroup) {
       router.replace("/(authenticated)/(tabs)/today");
-    } else if (!isSignedIn && pathName !== '/') {
+    } else if (!isSignedIn && pathName !== "/") {
       router.replace("/");
     }
   }, [isLoaded, isSignedIn]);
@@ -45,7 +48,10 @@ const InitialLayout = () => {
 
   return (
     <Stack
-      screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Colors.primary } }}
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: Colors.primary },
+      }}
     >
       <Stack.Screen
         name="index"
@@ -62,7 +68,10 @@ const RootLayout = () => {
   return (
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
       <ClerkLoaded>
-        <InitialLayout />
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <Toaster />
+          <InitialLayout />
+        </GestureHandlerRootView>
       </ClerkLoaded>
     </ClerkProvider>
   );
