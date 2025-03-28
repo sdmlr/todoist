@@ -6,6 +6,8 @@ import AsyncStorage from 'expo-sqlite/kv-store';
 export const addDummyData = async (db: ExpoSQLiteDatabase) => {
   const value = AsyncStorage.getItemSync('initialized');
   if (value) return;
+  console.log('Adding dummy data');
+  
 
   await db.insert(projects).values([
     { name: 'Inbox', color: '#000000' },
