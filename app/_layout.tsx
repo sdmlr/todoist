@@ -3,10 +3,14 @@ import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
 import { Slot } from "expo-router";
 import { tokenCache } from "@/utils/cache";
 import { Colors } from "@/constants/Colors";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { View, ActivityIndicator, LogBox } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Toaster } from "sonner-native";
+import { openDatabaseSync, SQLiteProvider } from "expo-sqlite";
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
+import migrations from "@/drizzle/migrations";
 
 LogBox.ignoreLogs(["Clerk: Clerk has been loaded with development keys"]);
 
@@ -65,16 +69,31 @@ const InitialLayout = () => {
 };
 
 const RootLayout = () => {
+  const expoDB = openDatabaseSync("todos");
+  const db = drizzle(expoDB);
+  const { success, error } = useMigrations(db, migrations);
+
+  useEffect(() => {
+    if (!success) return;
+  }, [success]);
+
   return (
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
       <ClerkLoaded>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <Toaster />
-          <InitialLayout />
-        </GestureHandlerRootView>
+        <Suspense fallback={<Loading />}>
+          <SQLiteProvider databaseName="todos" useSuspense>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <Toaster />
+              <InitialLayout />
+            </GestureHandlerRootView>
+          </SQLiteProvider>
+        </Suspense>
       </ClerkLoaded>
     </ClerkProvider>
   );
 };
 
+function Loading() {
+  return <ActivityIndicator size="large" color={Colors.primary} />;
+}
 export default RootLayout;
