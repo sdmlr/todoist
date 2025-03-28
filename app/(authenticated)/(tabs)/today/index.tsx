@@ -1,9 +1,10 @@
-import { View, Text } from "react-native";
+import Fab from "@/components/Fab";
+import { View } from "react-native";
 
 const index = () => {
   return (
-    <View className="flex-1 bg-white">
-      <Text>Today</Text>
+    <View className="flex-1">
+      <Fab />
     </View>
   );
 };
