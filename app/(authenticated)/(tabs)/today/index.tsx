@@ -1,6 +1,6 @@
 import Fab from "@/components/Fab";
 import { useSQLiteContext } from "expo-sqlite";
-import { View } from "react-native";
+import { SectionList, Text, View } from "react-native";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { projects, todos } from "@/db/schema";
@@ -9,6 +9,9 @@ import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { Todo } from "@/types/interfaces";
 import { daysInWeek } from "date-fns/constants";
+import TaskRow from "@/components/TaskRow";
+import { RefreshControl } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface Section {
   title: string;
@@ -29,6 +32,7 @@ const Page = () => {
   );
 
   const [sectionListData, setSectionListData] = useState<Section[]>([]);
+  const { top } = useSafeAreaInsets();
 
   useEffect(() => {
     const formatedData = data?.map((item) => ({
@@ -69,11 +73,25 @@ const Page = () => {
       return dateA.getTime() - dateB.getTime();
     });
 
-    setSectionListData(listData)
+    setSectionListData(listData);
   }, [data]);
 
   return (
-    <View className="flex-1">
+    <View className="flex-1" style={{ paddingTop: top + 20 }}>
+      <SectionList
+        showsVerticalScrollIndicator={false}
+        contentInsetAdjustmentBehavior="automatic"
+        sections={sectionListData}
+        renderItem={({ item }) => <TaskRow task={item} />}
+        renderSectionHeader={({ section }) => (
+          <Text className="text-base bg-white font-bold p-[14px] border-b border-lightBorder">
+            {section.title}
+          </Text>
+        )}
+        refreshControl={
+          <RefreshControl refreshing={false} onRefresh={() => {}} />
+        }
+      />
       <Fab />
     </View>
   );
