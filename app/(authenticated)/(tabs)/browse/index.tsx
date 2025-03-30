@@ -9,6 +9,7 @@ import { useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { View, Text, Button, TouchableOpacity, FlatList } from "react-native";
 import * as ContextMenu from "zeego/context-menu";
+import Animated, { LinearTransition } from "react-native-reanimated";
 
 const Page = () => {
   const { signOut } = useAuth();
@@ -40,8 +41,9 @@ const Page = () => {
             <Ionicons name="add" size={24} color={Colors.dark} />
           </TouchableOpacity>
         </View>
-        <FlatList
+        <Animated.FlatList
           data={data}
+          itemLayoutAnimation={LinearTransition}
           renderItem={({ item }) => (
             <ContextMenu.Root key={item.id}>
               <ContextMenu.Trigger>
