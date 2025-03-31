@@ -44,7 +44,6 @@
           "launchMode": "most-recent"
         }
       ],
-      "react-native-bottom-tabs",
       "expo-sqlite"
     ],
     "experiments": {
