@@ -10,6 +10,8 @@ import { useSQLiteContext } from "expo-sqlite";
 import { View, Text, Button, TouchableOpacity, FlatList } from "react-native";
 import * as ContextMenu from "zeego/context-menu";
 import Animated, { LinearTransition } from "react-native-reanimated";
+import { useRevenueCat } from "@/providers/RevenueCat";
+import RevenueCatUI, { PAYWALL_RESULT } from "react-native-purchases-ui";
 
 const Page = () => {
   const { signOut } = useAuth();
@@ -17,18 +19,40 @@ const Page = () => {
   const db = useSQLiteContext();
   const drizzleDb = drizzle(db);
   const { data } = useLiveQuery(drizzleDb.select().from(projects), []);
-  const isPro = false;
+  const { isPro } = useRevenueCat();
   console.log("Page - data:", data);
 
   const onDeleteProject = async (id: number) => {
     await drizzleDb.delete(projects).where(eq(projects.id, id));
   };
 
-  const onNewProject = async (id: number) => {
+  const onNewProject = async () => {
+    console.log("isPro: ", isPro);
+
     if (data.length >= 5 && !isPro) {
-      //go pro
+      goPro();
     } else {
       router.push("/browse/new-project");
+    }
+  };
+
+  const goPro = async () => {
+    const paywallResult: PAYWALL_RESULT = await RevenueCatUI.presentPaywall({
+      displayCloseButton: false,
+    });
+
+    console.log(paywallResult);
+
+    switch (paywallResult) {
+      case PAYWALL_RESULT.NOT_PRESENTED:
+      case PAYWALL_RESULT.ERROR:
+      case PAYWALL_RESULT.CANCELLED:
+        return false;
+      case PAYWALL_RESULT.PURCHASED:
+      case PAYWALL_RESULT.RESTORED:
+        return true;
+      default:
+        return false;
     }
   };
 
