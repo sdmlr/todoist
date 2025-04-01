@@ -12,7 +12,7 @@ import { useRouter } from "expo-router";
 export default function Index() {
   const { top } = useSafeAreaInsets();
   const router = useRouter();
-  
+
   const { startSSOFlow: startGoogleSSO } = useSSO({
     strategy: "oauth_google",
   });
@@ -92,11 +92,12 @@ export default function Index() {
           <Ionicons name="logo-google" size={24} />
           <Text className="text-base font-medium">Continue with Google</Text>
         </TouchableOpacity>
-        <TouchableOpacity className="flex-row items-center justify-center p-[12px] gap-[10px] rounded-[6px] border-[0.5px] border-[#D9D9D9]">
+        <TouchableOpacity
+          onPress={handleFakeLogin}
+          className="flex-row items-center justify-center p-[12px] gap-[10px] rounded-[6px] border-[0.5px] border-[#D9D9D9]"
+        >
           <Ionicons name="mail" size={24} />
-          <Text className="text-base font-medium" onPress={handleFakeLogin}>
-            Continue with Email
-          </Text>
+          <Text className="text-base font-medium">Continue with Email</Text>
         </TouchableOpacity>
 
         <Text className="text-xs text-center text-lightText">
