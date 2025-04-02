@@ -38,7 +38,7 @@ const Page = () => {
 
   const goPro = async () => {
     const paywallResult: PAYWALL_RESULT = await RevenueCatUI.presentPaywall({
-      displayCloseButton: false,
+      displayCloseButton: true,
     });
 
     console.log(paywallResult);
