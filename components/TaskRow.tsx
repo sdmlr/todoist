@@ -37,6 +37,7 @@ const TaskRow = ({ task }: TaskRowProps) => {
               fillColor={task.project_color}
               unFillColor="#fff"
               isChecked={task.completed === 1}
+              innerIconStyle={{ borderWidth: 2 }}
               textStyle={{
                 color: "#000",
                 fontSize: 16,
