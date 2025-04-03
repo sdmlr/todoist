@@ -104,8 +104,24 @@ const TodoForm = ({ todo }: TodoFormProps) => {
             className="border-[0.5px] border-lightBorder rounded-md mr-2 justify-center items-center flex-row gap-1"
             style={{ paddingHorizontal: 12, paddingVertical: 8 }}
           >
+            <Ionicons name="calendar-outline" size={24} color={Colors.primary} />
+            <Text className="text-[14px] text-dark font-medium">Date</Text>
+          </Pressable>
+
+          <Pressable
+            className="border-[0.5px] border-lightBorder rounded-md mr-2 justify-center items-center flex-row gap-1"
+            style={{ paddingHorizontal: 12, paddingVertical: 8 }}
+          >
             <Ionicons name="flag-outline" size={24} color={Colors.primary} />
-            <Text>Priority</Text>
+            <Text className="text-[14px] text-dark font-medium">Priority</Text>
+          </Pressable>
+
+          <Pressable
+            className="border-[0.5px] border-lightBorder rounded-md mr-2 justify-center items-center flex-row gap-1"
+            style={{ paddingHorizontal: 12, paddingVertical: 8 }}
+          >
+            <Ionicons name="location-outline" size={20} color={Colors.primary} />
+            <Text className="text-[14px] text-dark font-medium">Location</Text>
           </Pressable>
         </ScrollView>
       </ScrollView>
