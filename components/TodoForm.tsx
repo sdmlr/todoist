@@ -13,8 +13,11 @@ import { useSQLiteContext } from "expo-sqlite";
 import { projects, todos } from "@/db/schema";
 import { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "@/constants/Colors";
+import { Colors, DATE_COLORS } from "@/constants/Colors";
 import { eq } from "drizzle-orm";
+import { useRouter } from "expo-router";
+import { useMMKVString } from "react-native-mmkv";
+import { format, isSameDay, isTomorrow } from "date-fns";
 
 type TodoFormProps = {
   todo?: Todo & {
@@ -32,6 +35,7 @@ type TodoFormData = {
 const TodoForm = ({ todo }: TodoFormProps) => {
   const db = useSQLiteContext();
   const drizzleDb = drizzle(db);
+  const router = useRouter();
 
   const {
     control,
@@ -60,6 +64,19 @@ const TodoForm = ({ todo }: TodoFormProps) => {
           color: "#000",
         }
   );
+  const [selectedDate, setSelectedDate] = useState<Date>(
+    todo?.due_date ? new Date(todo.due_date) : new Date()
+  );
+
+  const [previouslySelectedDate, setPreviouslySelectedDate] =
+    useMMKVString("selectedDate");
+
+  useEffect(() => {
+    if (previouslySelectedDate) {
+      setSelectedDate(new Date(previouslySelectedDate));
+      setPreviouslySelectedDate(undefined);
+    }
+  }, [previouslySelectedDate]);
 
   useEffect(() => {
     trigger();
@@ -74,7 +91,7 @@ const TodoForm = ({ todo }: TodoFormProps) => {
           name: data.name,
           description: data.description,
           project_id: selectedProject.id,
-          due_date: 0, // TODO
+          due_date: selectedDate.getTime(),
         })
         .where(eq(todos.id, todo.id));
     } else {
@@ -86,10 +103,36 @@ const TodoForm = ({ todo }: TodoFormProps) => {
         priority: 0,
         date_added: Date.now(),
         completed: 0,
-        due_date: 0, //TODO add due date
+        due_date: selectedDate.getTime(),
       });
     }
   };
+
+  const changeDate = () => {
+    const dateString = selectedDate.toISOString();
+    setPreviouslySelectedDate(dateString);
+    router.push("/task/date-select");
+  };
+
+  const getDateObject = (date: Date) => {
+    if (isSameDay(date, new Date())) {
+      return {
+        name: "Today",
+        color: DATE_COLORS.today,
+      };
+    } else if (isTomorrow(new Date(date))) {
+      return {
+        name: "Tomorrow",
+        color: DATE_COLORS.tomorrow,
+      };
+    } else {
+      return {
+        name: format(new Date(date), "EEE, d MMM"),
+        color: DATE_COLORS.other,
+      };
+    }
+  };
+
   return (
     <View>
       <ScrollView
@@ -139,11 +182,21 @@ const TodoForm = ({ todo }: TodoFormProps) => {
           style={{ flexDirection: "row", paddingHorizontal: 16 }}
         >
           <Pressable
-            className="border-[0.5px] border-lightBorder rounded-md justify-center items-center flex-row mr-2"
+            onPress={() => changeDate()}
+            className="border-[0.5px] border-lightBorder rounded-md justify-center items-center flex-row px-3"
             style={{ paddingHorizontal: 12, paddingVertical: 8, gap: 4 }}
           >
-            <Ionicons name="calendar-outline" size={24} color={Colors.dark} />
-            <Text className="text-[14px] text-dark font-medium">Date</Text>
+            <Ionicons
+              name="calendar-outline"
+              size={24}
+              color={getDateObject(selectedDate).color}
+            />
+            <Text
+              className="text-[14px] font-medium"
+              style={{ color: getDateObject(selectedDate).color }}
+            >
+              {getDateObject(selectedDate).name}
+            </Text>
           </Pressable>
 
           <Pressable
@@ -185,7 +238,7 @@ const TodoForm = ({ todo }: TodoFormProps) => {
             style={{ paddingHorizontal: 12, paddingVertical: 8, gap: 4 }}
           >
             <Ionicons name="pricetags-outline" size={20} color={Colors.dark} />
-            <Text className="text-[14px] text-dark font-medium">Location</Text>
+            <Text className="text-[14px] text-dark font-medium">Label</Text>
           </Pressable>
         </ScrollView>
 
@@ -194,8 +247,7 @@ const TodoForm = ({ todo }: TodoFormProps) => {
           style={{ paddingHorizontal: 16, paddingVertical: 12, gap: 8 }}
         >
           <Pressable
-          onPress={() => console.log()}
-          
+            onPress={() => console.log()}
             className="border-[0.5px] border-lightBorder rounded-md mr-2 justify-center items-center flex-row"
             style={[
               { paddingHorizontal: 12, paddingVertical: 8, gap: 4 },
@@ -213,7 +265,11 @@ const TodoForm = ({ todo }: TodoFormProps) => {
           <Pressable
             onPress={handleSubmit(onSubmit)}
             className="rounded-full"
-            style={{ backgroundColor: Colors.dark, padding: 6, opacity: errors.name ? 0.5 : 1}}
+            style={{
+              backgroundColor: Colors.dark,
+              padding: 6,
+              opacity: errors.name ? 0.5 : 1,
+            }}
           >
             <Ionicons name="arrow-up" size={24} color={"#fff"} />
           </Pressable>
