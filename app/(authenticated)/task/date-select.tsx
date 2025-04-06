@@ -5,7 +5,9 @@ import { useMMKV, useMMKVString } from "react-native-mmkv";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors, DATE_COLORS } from "@/constants/Colors";
 import { addDays, addWeeks, format, nextSaturday } from "date-fns";
-import DateTimePicker, { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
+import DateTimePicker, {
+  DateTimePickerAndroid,
+} from "@react-native-community/datetimepicker";
 import { Platform } from "react-native";
 
 const Page = () => {
@@ -20,9 +22,24 @@ const Page = () => {
   }, [selectedDate]);
 
   const onSave = (date: Date) => {
-    const dateString = currentDate.toISOString();
+    const dateString = date.toISOString();
     setSelectedDate(dateString);
     router.dismiss();
+  };
+
+  const openDatePicker = () => {
+    DateTimePickerAndroid.open({
+      value: currentDate,
+      onChange: (event, date) => {
+        // If the user cancels, date will be undefined
+        if (date) {
+          onSave(date);
+        }
+      },
+      mode: "date",
+      display: "default",
+      accentColor: Colors.primary,
+    });
   };
 
   return (
@@ -101,16 +118,30 @@ const Page = () => {
           </Text>
         </TouchableOpacity>
       </View>
-      <DateTimePicker
-        value={new Date(currentDate)}
-        mode="date"
-        display='default'
-        onChange={(event, date) => {
-          const currentDate = date || new Date();
-          onSave(currentDate);
-        }}
-        accentColor={Colors.primary}
-      />
+
+      {/* Button to open DateTimePickerAndroid */}
+      {Platform.OS === "android" && (
+          <TouchableOpacity
+            className="flex-row mt-5 gap-3 justify-center items-center"
+            onPress={openDatePicker}
+          >
+            <Ionicons name="time-outline" size={20} color={Colors.primary} />
+            <Text className="text-[16px] font-bold">Pick a custom date</Text>
+          </TouchableOpacity>
+       
+      )}
+      {Platform.OS === "ios" && (
+        <DateTimePicker
+          value={new Date(currentDate)}
+          mode="date"
+          display="inline"
+          onChange={(event, date) => {
+            const currentDate = date || new Date();
+            onSave(currentDate);
+          }}
+          accentColor={Colors.primary}
+        />
+      )}
     </View>
   );
 };
