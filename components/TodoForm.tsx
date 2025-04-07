@@ -5,6 +5,8 @@ import {
   TextInput,
   Pressable,
   StyleSheet,
+  Modal,
+  Dimensions,
 } from "react-native";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { Todo } from "@/types/interfaces";
@@ -50,6 +52,7 @@ const TodoForm = ({ todo }: TodoFormProps) => {
     mode: "onChange",
   });
 
+  const [showProjects, setShowProjects] = useState(false);
   const { data } = useLiveQuery(drizzleDb.select().from(projects));
   const [selectedProject, setSelectedProject] = useState(
     todo?.project_id
@@ -135,6 +138,26 @@ const TodoForm = ({ todo }: TodoFormProps) => {
 
   return (
     <View>
+      <Modal visible={showProjects} transparent={true} animationType="fade" onRequestClose={() => {
+        setShowProjects(false)
+      }}>
+        <View className="flex-1 justify-center items-center">
+          <View
+            style={{
+              margin: 20,
+              backgroundColor: "white",
+              borderRadius: 16,
+              boxShadow: "0 0 10 px 0 rgba(0, 0, 0, 0.2)",
+              width: Dimensions.get("window").width - 60,
+              height: 200,
+              elevation: 5,
+            }}
+          >
+            <Text>Projects</Text>
+          </View>
+        </View>
+      </Modal>
+
       <ScrollView
         keyboardShouldPersistTaps="always"
         contentContainerStyle={{
@@ -247,19 +270,30 @@ const TodoForm = ({ todo }: TodoFormProps) => {
           style={{ paddingHorizontal: 16, paddingVertical: 12, gap: 8 }}
         >
           <Pressable
-            onPress={() => console.log()}
+            onPress={() => setShowProjects(true)}
             className="border-[0.5px] border-lightBorder rounded-md mr-2 justify-center items-center flex-row"
             style={[
               { paddingHorizontal: 12, paddingVertical: 8, gap: 4 },
               { opacity: errors.name ? 0.5 : 1 },
             ]}
           >
-            <Ionicons
-              name="pricetags-outline"
-              size={20}
-              color={Colors.primary}
-            />
-            <Text className="text-[14px] text-dark font-medium">Location</Text>
+            {selectedProject.id === 1 && (
+              <Ionicons
+                name="file-tray-outline"
+                size={20}
+                color={Colors.dark}
+              />
+            )}
+
+            {selectedProject.id !== 1 && (
+              <Text style={{ color: selectedProject.color }}>
+                #{selectedProject.id}
+              </Text>
+            )}
+            <Text className="text-[14px] text-dark font-medium">
+              {selectedProject.name}
+            </Text>
+            <Ionicons name="caret-down" size={20} color={Colors.dark} />
           </Pressable>
 
           <Pressable
