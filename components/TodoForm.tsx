@@ -7,9 +7,11 @@ import {
   StyleSheet,
   Modal,
   Dimensions,
+  FlatList,
+  TouchableOpacity,
 } from "react-native";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { Todo } from "@/types/interfaces";
+import { Project, Todo } from "@/types/interfaces";
 import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
 import { projects, todos } from "@/db/schema";
@@ -43,7 +45,7 @@ const TodoForm = ({ todo }: TodoFormProps) => {
     control,
     handleSubmit,
     trigger,
-    formState: { errors },
+    formState: { errors, touchedFields },
   } = useForm<TodoFormData>({
     defaultValues: {
       name: todo?.name || "",
@@ -109,6 +111,7 @@ const TodoForm = ({ todo }: TodoFormProps) => {
         due_date: selectedDate.getTime(),
       });
     }
+    router.dismiss()
   };
 
   const changeDate = () => {
@@ -136,11 +139,21 @@ const TodoForm = ({ todo }: TodoFormProps) => {
     }
   };
 
+  const onProjectPress = (project: Project) => {
+    setSelectedProject(project);
+    setShowProjects(false);
+  };
+
   return (
     <View>
-      <Modal visible={showProjects} transparent={true} animationType="fade" onRequestClose={() => {
-        setShowProjects(false)
-      }}>
+      <Modal
+        visible={showProjects}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => {
+          setShowProjects(false);
+        }}
+      >
         <View className="flex-1 justify-center items-center">
           <View
             style={{
@@ -153,7 +166,30 @@ const TodoForm = ({ todo }: TodoFormProps) => {
               elevation: 5,
             }}
           >
-            <Text>Projects</Text>
+            <FlatList
+              data={data}
+              showsVerticalScrollIndicator={false}
+              style={{ borderRadius: 40 }}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  className="flex-row items-center bg-white rounded-xl gap-3"
+                  style={{ padding: 14 }}
+                  onPress={() => onProjectPress(item)}
+                >
+                  <Text style={{ color: item.color }}>#{item.id}</Text>
+                  <Text className="text-base">{item.name}</Text>
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item) => item.id.toString()}
+              ItemSeparatorComponent={() => (
+                <View
+                  style={{
+                    height: StyleSheet.hairlineWidth,
+                    backgroundColor: Colors.lightBorder,
+                  }}
+                />
+              )}
+            />
           </View>
         </View>
       </Modal>
@@ -271,11 +307,8 @@ const TodoForm = ({ todo }: TodoFormProps) => {
         >
           <Pressable
             onPress={() => setShowProjects(true)}
-            className="border-[0.5px] border-lightBorder rounded-md mr-2 justify-center items-center flex-row"
-            style={[
-              { paddingHorizontal: 12, paddingVertical: 8, gap: 4 },
-              { opacity: errors.name ? 0.5 : 1 },
-            ]}
+            className="border-[0.5px] border-lightBorder rounded-md justify-center items-center flex-row"
+            style={{ paddingHorizontal: 12, paddingVertical: 8 }}
           >
             {selectedProject.id === 1 && (
               <Ionicons
@@ -286,21 +319,24 @@ const TodoForm = ({ todo }: TodoFormProps) => {
             )}
 
             {selectedProject.id !== 1 && (
-              <Text style={{ color: selectedProject.color }}>
-                #{selectedProject.id}
+              <Text style={{ color: selectedProject.color, marginRight: 4 }}>
+                #
               </Text>
             )}
-            <Text className="text-[14px] text-dark font-medium">
+            <Text
+              className="text-[14px] text-dark font-medium"
+              style={{ marginRight: 3 }}
+            >
               {selectedProject.name}
             </Text>
-            <Ionicons name="caret-down" size={20} color={Colors.dark} />
+            <Ionicons name="caret-down" size={14} color={Colors.dark} />
           </Pressable>
 
           <Pressable
             onPress={handleSubmit(onSubmit)}
             className="rounded-full"
             style={{
-              backgroundColor: Colors.dark,
+              backgroundColor: Colors.primary,
               padding: 6,
               opacity: errors.name ? 0.5 : 1,
             }}
