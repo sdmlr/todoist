@@ -49,7 +49,7 @@ const Page = () => {
   withProjectData
     .map((todo) => {
       if (todo.due_date) {
-        markedDates[new Date(todo.due_date).toISOString().split('T')[0]] = {
+        markedDates[new Date(todo.due_date).toISOString().split("T")[0]] = {
           marked: true,
           dotColor: todo.project_color,
         };
@@ -65,20 +65,25 @@ const Page = () => {
     }));
 
     // Group tasks by day
-    const groupedByDay = formatedData?.reduce((acc: { [key: string]: Todo[] }, task) => {
-      const day = format(new Date(task.due_date || new Date()), 'dd-MM-yyyy');
-      if (!acc[day]) {
-        acc[day] = [];
-      }
-      acc[day].push(task);
-      return acc;
-    }, {});
+    const groupedByDay = formatedData?.reduce(
+      (acc: { [key: string]: Todo[] }, task) => {
+        const day = format(new Date(task.due_date || new Date()), "dd-MM-yyyy");
+        if (!acc[day]) {
+          acc[day] = [];
+        }
+        acc[day].push(task);
+        return acc;
+      },
+      {}
+    );
 
     // Convert grouped data to sections array
-    const listData: Section[] = Object.entries(groupedByDay || {}).map(([day, tasks]) => ({
-      title: day,
-      data: tasks,
-    }));
+    const listData: Section[] = Object.entries(groupedByDay || {}).map(
+      ([day, tasks]) => ({
+        title: day,
+        data: tasks,
+      })
+    );
 
     // Sort sections by date
     listData.sort((a, b) => {
@@ -90,9 +95,8 @@ const Page = () => {
     setAgendaItems(listData);
   }, [data]);
 
-
   return (
-    <>
+    <View className="flex-1 bg-white">
       <CalendarProvider
         date={today}
         showTodayButton
@@ -132,7 +136,7 @@ const Page = () => {
         />
       </CalendarProvider>
       <Fab />
-    </>
+    </View>
   );
 };
 
